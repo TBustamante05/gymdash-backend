@@ -5,6 +5,7 @@ import com.example.gymdash.dtos.auth.LoginRequest;
 import com.example.gymdash.dtos.auth.RegisterRequest;
 import com.example.gymdash.entities.Role;
 import com.example.gymdash.entities.User;
+import com.example.gymdash.exceptions.BadRequestException;
 import com.example.gymdash.repositories.UserRepository;
 import com.example.gymdash.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
@@ -43,10 +44,10 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
         // Validar que no exista el username o email
         if (userRepository.existsByUsername(request.username()))
-            throw new RuntimeException("El username ya está en uso");
+            throw new BadRequestException("El username ya está en uso");
 
         if (userRepository.existsByEmail(request.email()))
-            throw new RuntimeException("El email ya está en uso");
+            throw new BadRequestException("El email ya está en uso");
 
         // Crear el usuario
         User user = User.builder()
