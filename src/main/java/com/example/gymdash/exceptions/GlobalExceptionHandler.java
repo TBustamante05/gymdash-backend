@@ -56,6 +56,8 @@ public class GlobalExceptionHandler {
     // Atrapa CUALQUIER excepción que no se capturó arriba
     @ExceptionHandler(Exception.class)
     public  ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
+        ex.printStackTrace();
+
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(500, "Error interno del servidor"));
