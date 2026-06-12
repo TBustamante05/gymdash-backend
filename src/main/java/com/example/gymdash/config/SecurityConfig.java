@@ -4,6 +4,7 @@ import com.example.gymdash.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -56,6 +57,16 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/api/public/**"
                         ).permitAll()
+
+                        // Solo ADMIN
+                        .requestMatchers(HttpMethod.GET, "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/admin/**").hasRole("ADMIN")
+
+                        // ADMIN y TRAINER pueden crear/editar rutinas de otro
+                        .requestMatchers("/api/trainer/**").hasAnyRole("ADMIN", "TRAINER")
+
+                        // Cualquier usuario autenticado puede manejar sus propias turinas
+                        .requestMatchers("/api/routines/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess
