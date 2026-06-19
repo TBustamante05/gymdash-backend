@@ -85,7 +85,7 @@ public class SecurityConfig {
                         // ADMIN y TRAINER pueden crear/editar rutinas de otro
                         .requestMatchers("/api/trainer/**").hasAnyRole("ADMIN", "TRAINER")
 
-                        // Cualquier usuario autenticado puede manejar sus propias turinas
+                        // Cualquier usuario autenticado puede manejar sus propias rutinas
                         .requestMatchers("/api/routines/**").authenticated()
                         .anyRequest().authenticated()
                 )

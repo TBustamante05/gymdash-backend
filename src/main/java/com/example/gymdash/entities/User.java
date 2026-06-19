@@ -46,7 +46,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // Convierte el rol en algo que Spring Security entiende
-        return List.of(new SimpleGrantedAuthority("Role_" + role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
 }
