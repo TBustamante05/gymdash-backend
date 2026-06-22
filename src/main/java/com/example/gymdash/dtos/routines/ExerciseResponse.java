@@ -6,5 +6,6 @@ public record ExerciseResponse(
     Integer sets,
     Integer reps,
     Double weight,
-    Integer restTime
+    Integer restTime,
+    Integer position
 ) {}

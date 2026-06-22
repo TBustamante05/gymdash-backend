@@ -24,6 +24,10 @@ public class Exercise {
     private Double weight;
     private Integer restTime;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer position = 0;
+
     // Relación con WorkoutRoutine: Muchos ejercicios pertenecen a una rutina
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "routine_id", nullable = false)

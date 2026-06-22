@@ -1,9 +1,6 @@
 package com.example.gymdash.services.routines;
 
-import com.example.gymdash.dtos.routines.ExerciseRequest;
-import com.example.gymdash.dtos.routines.ExerciseResponse;
-import com.example.gymdash.dtos.routines.RoutineRequest;
-import com.example.gymdash.dtos.routines.RoutineResponse;
+import com.example.gymdash.dtos.routines.*;
 import com.example.gymdash.entities.Exercise;
 import com.example.gymdash.entities.User;
 import com.example.gymdash.entities.WorkoutRoutine;
@@ -14,6 +11,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -86,6 +84,7 @@ public class RoutineService {
 
         return exerciseRepository.findAllByRoutineId(routineId)
                 .stream()
+                .sorted(Comparator.comparingInt(Exercise::getPosition))
                 .map(this::toExerciseResponse)
                 .toList();
     }
@@ -95,12 +94,15 @@ public class RoutineService {
         WorkoutRoutine routine = routineRepository
                 .findByIdAndUserIdOrThrow(routineId, userId);
 
+        int nextPosition = exerciseRepository.findAllByRoutineId(routineId).size();
+
         Exercise exercise = Exercise.builder()
                 .name(req.name())
                 .sets(req.sets())
                 .reps(req.reps())
                 .restTime(req.restTime())
                 .weight(req.weight())
+                .position(nextPosition)
                 .routine(routine)
                 .build();
 
@@ -123,6 +125,19 @@ public class RoutineService {
         return toExerciseResponse(exerciseRepository.save(exercise));
     }
 
+    public void reorderExercises(Long routineId, ReorderRequest req) {
+        Long userId = getCurrentUser().getId();
+        routineRepository.findByIdAndUserIdOrThrow(routineId, userId);
+
+        List<Long> ids = req.exerciseIds();
+        for (int i = 0; i < ids.size(); i++) {
+            Exercise exercise = exerciseRepository
+                    .findByIdAndRoutineIdOrThrow(ids.get(i), routineId);
+            exercise.setPosition(i);
+            exerciseRepository.save(exercise);
+        }
+    }
+
     public void deleteExercise(Long routineId, Long exerciseId) {
         Long userId = getCurrentUser().getId();
         routineRepository.findByIdAndUserIdOrThrow(routineId, userId);
@@ -136,6 +151,7 @@ public class RoutineService {
     private RoutineResponse toRoutineResponse(WorkoutRoutine r) {
         List<ExerciseResponse> exercises = r.getExercises()
                 .stream()
+                .sorted(Comparator.comparingInt(Exercise::getPosition))
                 .map(this::toExerciseResponse)
                 .toList();
 
@@ -146,7 +162,7 @@ public class RoutineService {
 
     private ExerciseResponse toExerciseResponse(Exercise e) {
         return new ExerciseResponse(
-                e.getId(), e.getName(), e.getSets(), e.getReps(), e.getWeight(), e.getRestTime()
+                e.getId(), e.getName(), e.getSets(), e.getReps(), e.getWeight(), e.getRestTime(), e.getPosition()
         );
     }
 }

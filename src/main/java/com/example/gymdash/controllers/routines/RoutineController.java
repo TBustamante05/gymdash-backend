@@ -1,9 +1,6 @@
 package com.example.gymdash.controllers.routines;
 
-import com.example.gymdash.dtos.routines.ExerciseRequest;
-import com.example.gymdash.dtos.routines.ExerciseResponse;
-import com.example.gymdash.dtos.routines.RoutineRequest;
-import com.example.gymdash.dtos.routines.RoutineResponse;
+import com.example.gymdash.dtos.routines.*;
 import com.example.gymdash.services.routines.RoutineService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -86,4 +83,15 @@ public class RoutineController {
         routineService.deleteExercise(routineId, exerciseId);
         return ResponseEntity.noContent().build();
     }
+
+    // ---------------------- REODER ------------------------
+    @PutMapping("/{routineId}/exercises/reorder")
+    public ResponseEntity<Void> reorderExercises(
+            @PathVariable Long routineId,
+            @RequestBody ReorderRequest req
+    ) {
+        routineService.reorderExercises(routineId, req);
+        return ResponseEntity.noContent().build();
+    }
+
 }
